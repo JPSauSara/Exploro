@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+<head>
+    <title>Plan My Date</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.1/css/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./assets/css/bootstrap-clockpicker.css">
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">    <!--<link rel="stylesheet" type="text/css" href="./assets/css/style.css">-->
+    <!-- <link rel="stylesheet" href="css/main/style.css"> -->
+    <link rel="stylesheet" href="css/main/turquoise.css">
+    <!-- Same-Page Unique Code -->
+    <link rel="stylesheet" href="css/main/same-page.css">
+
+
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://api.eventful.com/js/api"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <script src="assets/javascript/jquery.tabletojson.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.2.1/js/dataTables.select.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/bootstrap-clockpicker.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+    <script src="assets/javascript/main.js"></script>
+    <script src="assets/javascript/firebaseStuff.js"></script>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="container-fluid">
+    <h1>Eventful API Searches </h1>
+    <div class="row">
+        <div class="col-md-4">
+            <!--<div class="panel panel-primary">-->
+                <form  id="get-results">
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Search for user..."
+                               name="savedUser" id="userEmail"
+                               data-validation="email"
+                               data-validation-error-msg="Email is not in a valid format: name@email.com">
+                    </div>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary btn-user" id="getUserButton" type="submit">Get User</button>
+                    </span>
+                </form>
+            <!--</div>-->
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+
+                <div class="panel-heading">
+                    <h3 class="panel-title">Enter details to 'Plan Your Date'</h3>
+                </div>
+                <div class="panel-body">
+                    <form id="main" role="form">
+                        <div class="form-group">
+                            <label for="name-input">Name:</label>
+                            <input class="form-control" id="name-input" type="text" placeholder="Your Name"
+                                   data-validation="length custom"
+                                   data-validation-length="3-50"
+                                   data-validation-regexp="^([a-zA-Z\s]+)$"
+                                   data-validation-error-msg="Name must be 3-50 chars, and cannot contain numbers or special characters">
+                        </div>
+                        <div class="form-group">
+                            <label for="email-input">Email:</label>
+                            <input class="form-control" id="email-input" type="email" placeholder="name@email.com"
+                                   data-validation="email"
+                                   data-validation-error-msg="Email is not in a valid format: name@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone-input">Phone:</label>
+                            <input class="form-control" id="phone-input" type="tel" placeholder="###-###-####, hyphens optional"
+                                   data-validation="custom"
+                                   data-validation-regexp="^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$"
+                                   data-validation-error-msg="Phone number is not in a valid format for USA: ###-###-####, hyphen optional">
+                        </div>
+                        <div class="form-group">
+                            <label>Interests:</label><br>
+                            <select id="interests-input"
+                                    data-validation="required"
+                                    data-validation-error-msg="You must make an 'Interest' selection.">
+                                <option value=""
+                                >Choose..</option>
+                                <option value="sports">Sports</option>
+                                <option value="music">Music</option>
+                                <option value="museums">Museums</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="nightlife">Nightlife</option>
+                                <option value="food">Food</option>
+                                <option value="film">Film</option>
+                                <option value="technology">Technology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location-input">Location:</label>
+                            <input class="form-control" id="location-input" type="text" placeholder="USA City or City, State"
+                                   data-suggestions="Chicago, Milwaukee, Atlanta, Boston, Miami"
+                                   data-validation="custom"
+                                   data-validation-regexp="^([a-zA-Z,\s]+)$"
+                                   data-validation-error-msg="'City' or 'City, State'">
+                        </div>
+                        <div class="form-group" id="date-time">
+                            <label for="from">Start Date Time / End Date Time:</label><br>
+                            <input type="text" id="from" name="from" placeholder="Arrival Date"><input type="text" id="to" name="to" placeholder="Departure Time">
+                            <br>
+                        </div>
+                        <div class="input-group clockpicker">
+                            <input id="from-time" value="" placeholder="Arrival Time">
+                            <input id="to-time" value="" placeholder="Departure Time">
+                        </div>
+
+                        <br>
+                        <button class="btn btn-default" id="plan-my-date" type="submit">Submit</button>
+                        <button class="btn btn-default" id="reset-my-plan" type="button">Reset</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 col-sm-4 col-md-12 col-lg-12">
+            <div class="col-sm-12">
+                <button class="btn btn-info" id="save-selections" type="button">Save Selection(s)</button>
+                <button id="btToggleDisplay" class="btn btn-info">Toggle table and card view</button>
+            </div>
+            <span id= "user-feedback" class = "label label-warning">You must select events or press reset</span>
+            <div class="panel panel-primary" id="your-results">
+                <div class="panel-heading">Your Itinerary</div>
+                <div class="panel-body table-responsive">
+                    <div id="userEmailOutput"></div>
+                </div>
+            </div>
+            <div class="panel panel-primary" id="your-itinerary">
+                <div class="panel-heading">Your Event Search</div>
+                <div class="panel-body table-responsive">
+                    <table class="display" id="events-table" width="100%">
+                        <thead>
+                        <tr>
+                            <th style="width:01%"></th>
+                            <th style="width:17%">Date Time</th>
+                            <th style="width:15%">Event</th>
+                            <th style="width:10%">Poster</th>
+                            <th style="width:18%">Description</th>
+                            <th style="width:10%">Venue</th>
+                            <th style="width:15%">Venue Address</th>
+                            <th style="width:15%">City State Zip</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================ FOOTER - START ================================ -->
+    <footer>
+        <div id="footer">
+            <div class="container">
+                <div class="row row-bottom-padded-sm">
+                    <div class="col-md-4 col-sm-4 col-xs-12 fh5co-footer-link">
+                        <h3>Mission Statement</h3>
+                        <p>We're dedicated to helping you make the most of your trip by provinding you a platform to easily access events in your area based on your interests; all in the palm of your hand.</p>   
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 fh5co-footer-link">
+                        <h3>Who We Are</h3>
+                        <ul>
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="about-us.html#team">Meet the team</a></li>
+                            <li><a href="about-us.html#fh5co-our-services">Contact Us</a></li>
+                        </ul>   
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 fh5co-footer-link">
+                        <h3>Services</h3>
+                        <ul>
+                            <li><a href="#">Features</a></li>
+                            <li><a href="#">Frequently Asked Questions</a></li>
+                        </ul>   
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 fh5co-footer-link">
+                        <h3>Top Cities</h3>
+                        <ul>
+                            <li><a href="eventful.html">Chicago</a></li>
+                            <li><a href="eventful.html">New York</a></li>
+                            <li><a href="eventful.html">Boston</a></li>
+                            <li><a href="eventful.html">St. Louis</a></li>
+                        </ul>   
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 fh5co-footer-link">
+                        <h3>Coming Soon!</h3>
+                        <ul>
+                            <li><a href="comingsoon.html">Additional Features</a></li>
+                            <li><a href="comingsoon.html"></a></li>
+                    
+                        </ul>   
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3 text-center">
+                        <p class="fh5co-social-icons">
+                            <a href="#"><i class="icon-twitter"></i></a>
+                            <a href="#"><i class="icon-facebook"></i></a>
+                            <a href="#"><i class="icon-instagram"></i></a>
+                            <a href="#"><i class="icon-pinterest"></i></a>
+                            <a href="#"><i class="icon-youtube"></i></a>
+                            <a href="#"><i class="icon-linkedin"></i></a>
+                        </p>
+                        <p>
+                            Copyright 2017 Same Page &mdash; All Rights Reserved.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+<!-- ================================ Footer - END ================================ -->
+
+
+</body>
+</html>
